@@ -6,6 +6,7 @@ public class FileRequest extends  AbstractMessage{
     }
 
     public FileRequest(String filename) {
+
         this.filename = filename;
     }
 }

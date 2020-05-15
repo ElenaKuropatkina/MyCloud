@@ -7,10 +7,12 @@ public class FileMessage extends AbstractMessage {
     private byte[] data;
 
     public String getFilename() {
+
         return filename;
     }
 
     public byte[] getData() {
+
         return data;
     }
 

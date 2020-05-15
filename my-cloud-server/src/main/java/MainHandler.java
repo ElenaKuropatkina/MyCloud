@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 public class MainHandler extends ChannelInboundHandlerAdapter {
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FileRequest) {
@@ -21,7 +22,6 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
             Files.write(Paths.get("my_server_storage/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
         }
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
