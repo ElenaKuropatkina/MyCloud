@@ -1,25 +1,36 @@
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.io.IOException;
 
 public class MainHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof FileRequest) {
-            FileRequest fr = (FileRequest) msg;
-            if (Files.exists(Paths.get("my_server_storage/" + fr.getFilename()))) {
-                FileMessage fm = new FileMessage(Paths.get("my_server_storage/" + fr.getFilename()));
-                ctx.writeAndFlush(fm);
+        if (msg instanceof CommandMessage) {
+            CmdService cs = new CmdService((CommandMessage) msg);
+            switch (((CommandMessage) msg).getCommand()) {
+                case "FILE_REQUEST":
+                    try {
+                        FileMessage fm = cs.processingFileRequest();
+                        ctx.writeAndFlush(fm);
+                    } catch (IOException e) {
+                        System.out.println("File not found");
+                    }
+                    break;
+                case "FILE_DELETE":
+                    cs.processing();
+                    break;
+//                case "FILE_GET_LIST":
+//                    ListMessage lm = (ListMessage) cs.getList();
+//                    System.out.println("FilesList");
+//                    ctx.writeAndFlush(lm);
+//                    break;
             }
         }
 
         if (msg instanceof FileMessage) {
-            FileMessage fm = (FileMessage) msg;
-            Files.write(Paths.get("my_server_storage/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
+            FileService fs = new FileService((FileMessage) msg);
+            fs.processing();
         }
     }
 
