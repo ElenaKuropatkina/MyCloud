@@ -1,5 +1,6 @@
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
 import java.io.IOException;
 
 public class MainHandler extends ChannelInboundHandlerAdapter {
@@ -8,8 +9,9 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof CommandMessage) {
             CmdService cs = new CmdService((CommandMessage) msg);
+            System.out.println(((CommandMessage) msg).getFilename());
             switch (((CommandMessage) msg).getCommand()) {
-                case "FILE_REQUEST":
+                case FILE_REQUEST:
                     try {
                         FileMessage fm = cs.processingFileRequest();
                         ctx.writeAndFlush(fm);
@@ -17,14 +19,17 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                         System.out.println("File not found");
                     }
                     break;
-                case "FILE_DELETE":
+                case FILE_DELETE:
                     cs.processing();
                     break;
-//                case "FILE_GET_LIST":
-//                    ListMessage lm = (ListMessage) cs.getList();
-//                    System.out.println("FilesList");
-//                    ctx.writeAndFlush(lm);
-//                    break;
+                case FILE_GET_LIST:
+                    ListMessage lm = (ListMessage) cs.getList();
+                    System.out.println("FilesList");
+                    ctx.writeAndFlush(lm);
+                    break;
+                case FILE_RENAME:
+                    cs.renameFile();
+                    break;
             }
         }
 

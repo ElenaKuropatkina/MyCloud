@@ -4,6 +4,7 @@ public class ListMessage extends AbstractMessage {
     private List<String> list;
 
     public List<String> getList() {
+
         return list;
     }
 
