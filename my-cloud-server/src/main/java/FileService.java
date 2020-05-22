@@ -6,7 +6,7 @@ import java.nio.file.StandardOpenOption;
 public class FileService {
     FileMessage fm;
 
-    public FileService(FileMessage fm){
+    public FileService(FileMessage fm) {
         this.fm = fm;
     }
 

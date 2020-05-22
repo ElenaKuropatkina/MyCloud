@@ -28,7 +28,7 @@ public class MyServer {
                         }
                     });
 
-            AuthService.connect();
+
             ChannelFuture future = sbs.bind(8189).sync();
             System.out.println("сервер запущен");
             future.channel().closeFuture().sync();
@@ -36,7 +36,7 @@ public class MyServer {
             mainGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-        AuthService.disconnect();
+
     }
 
 }
