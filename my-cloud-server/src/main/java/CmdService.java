@@ -7,39 +7,32 @@ import java.util.stream.Collectors;
 
 public class CmdService {
 
-    CommandMessage cmd;
-
-    public CmdService(CommandMessage cmd) {
-        this.cmd = cmd;
-    }
-
-    public FileMessage processingFileRequest() throws IOException {
-        if (Files.exists(Paths.get("my_server_storage/" + cmd.getFilename()))) {
-            FileMessage fm = new FileMessage(Paths.get("my_server_storage/" + cmd.getFilename()));
-            return fm;
+    public FileMessage processingFileRequest(CommandMessage cmd) throws IOException {
+        if (Files.exists(Paths.get("my_server_storage/" + cmd.getData()))) {
+            return new FileMessage(Paths.get("my_server_storage/" + cmd.getData()));
         } else throw new IOException();
     }
 
-    public void processing() throws IOException {
-        if (Files.exists(Paths.get("my_server_storage/" + cmd.getFilename()))) {
-            Files.delete(Paths.get("my_server_storage/" + cmd.getFilename()));
+    public ListMessage processing(CommandMessage cmd) throws IOException {
+        if (Files.exists(Paths.get("my_server_storage/" + cmd.getData()))) {
+            Files.delete(Paths.get("my_server_storage/" + cmd.getData()));
         }
+        return getList();
     }
 
     public ListMessage getList() throws IOException {
         ListMessage lm = new ListMessage();
-        lm.setList(Files.list(Paths.get("my_server_storage"))
+        lm.setList(Files.list(Paths.get("my_server_storage/"))
                 .filter(p -> !Files.isDirectory(p))
                 .map(p -> p.getFileName().toString())
                 .collect(Collectors.toList()));
         System.out.println("get list");
-
         return lm;
 
     }
 
-    public void renameFile() {
-        String s = cmd.getFilename();
+    public ListMessage renameFile(CommandMessage cmd) throws IOException {
+        String s = cmd.getData();
         System.out.println(s);
         String[] tokens = s.split(" ");
         System.out.println(tokens[0]);
@@ -52,6 +45,22 @@ public class CmdService {
                 original.renameTo(newFile);
             }
         }
+        return getList();
     }
+
+    public CommandMessage auth(CommandMessage cmd) throws IOException {
+        String s = cmd.getData();
+        String[] tokens = s.split(" ");
+        String login = tokens[0];
+        String pass = tokens[1];
+        if(AuthService.checkLoginAndPass(login, pass)) {
+            return new CommandMessage(CommandMessage.Command.AUTH_OK);
+        } else
+            return new CommandMessage(CommandMessage.Command.AUTH_FALSE);
+    }
+
+
+
+
 
 }

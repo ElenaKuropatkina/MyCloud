@@ -3,7 +3,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +18,6 @@ import java.util.ResourceBundle;
 
 public class MyClientController implements Initializable {
 
-    private ListMessage lm;
-
     @FXML
     TextField tfFileName;
 
@@ -26,6 +26,15 @@ public class MyClientController implements Initializable {
     @FXML
     ListView<String> remoteFilesList;
 
+    @FXML
+    HBox upperPanel;
+    @FXML
+    HBox bottomPanel;
+
+    @FXML
+    TextField loginField;
+    @FXML
+    PasswordField passwordField;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -36,13 +45,17 @@ public class MyClientController implements Initializable {
                     AbstractMessage am = Network.readMsg();
                     if (am instanceof FileMessage) {
                         FileMessage fm = (FileMessage) am;
-                        Files.write(Paths.get("client_storage/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
+                        Files.write(Paths.get("client_storage" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
                         refreshLocalFilesList();
                     }
                     if (am instanceof ListMessage) {
-                        lm = (ListMessage) am;
+                        ListMessage lm = (ListMessage) am;
                         System.out.println(lm.getList().toString());
-                        refreshRemoteFilesList();
+                        refreshRemoteFilesList(lm);
+                    }
+                    if (am instanceof CommandMessage) {
+                        CommandMessage cm = (CommandMessage) am;
+                        setAuth(cm);
                     }
                 }
             } catch (ClassNotFoundException | IOException e) {
@@ -57,6 +70,22 @@ public class MyClientController implements Initializable {
 
     }
 
+    public void setAuth(CommandMessage cmd){
+
+        if(cmd.getCommand().equals(CommandMessage.Command.AUTH_FALSE)) {
+            upperPanel.setVisible(true);
+            upperPanel.setManaged(true);
+            bottomPanel.setVisible(false);
+            bottomPanel.setManaged(false);
+        }
+        if(cmd.getCommand().equals(CommandMessage.Command.AUTH_OK)) {
+            upperPanel.setVisible(false);
+            upperPanel.setManaged(false);
+            bottomPanel.setVisible(true);
+            bottomPanel.setManaged(true);
+        }
+    }
+
     public void pressOnDownloadBtn(ActionEvent actionEvent) {
         if (tfFileName.getLength() > 0) {
             Network.sendMsg(new CommandMessage(CommandMessage.Command.FILE_REQUEST, tfFileName.getText()));
@@ -67,7 +96,7 @@ public class MyClientController implements Initializable {
     public void pressOnUploadBtn(ActionEvent actionEvent) {
         if (tfFileName.getLength() > 0) {
             try {
-                Network.sendMsg(new FileMessage((Paths.get("client_storage/" + tfFileName.getText()))));
+                Network.sendMsg(new FileMessage((Paths.get("client_storage" + tfFileName.getText()))));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -84,7 +113,7 @@ public class MyClientController implements Initializable {
 
     public void pressOnDeleteLocalBtn(ActionEvent actionEvent) throws IOException {
         if (tfFileName.getLength() > 0) {
-            Files.delete(Paths.get("client_storage/" + tfFileName.getText()));
+            Files.delete(Paths.get("client_storage" + tfFileName.getText()));
             tfFileName.clear();
             refreshLocalFilesList();
         }
@@ -98,7 +127,7 @@ public class MyClientController implements Initializable {
         if (tfFileName.getLength() > 0) {
             String s = tfFileName.getText();
             String[] tokens = s.split(" ");
-            Path folder = Paths.get("client_storage/");
+            Path folder = Paths.get("client_storage");
 
             File original = folder.resolve(tokens[0]).toFile();
             File newFile = folder.resolve(tokens[1]).toFile();
@@ -133,11 +162,23 @@ public class MyClientController implements Initializable {
 
     }
 
-    public void refreshRemoteFilesList() {
+    public void refreshRemoteFilesList(ListMessage lm) {
         Platform.runLater(() -> {
             remoteFilesList.getItems().clear();
             lm.getList().forEach(o -> remoteFilesList.getItems().add(o));
         });
+    }
+
+    public void tryToAuth(ActionEvent actionEvent) {
+        if (loginField.getLength() > 0 && passwordField.getLength() > 0)  {
+        StringBuilder sb = new StringBuilder();
+        sb.append(loginField.getText());
+        sb.append(" ");
+        sb.append(passwordField.getText());
+        Network.sendMsg(new CommandMessage(CommandMessage.Command.AUTH, sb.toString()));
+        }
+        loginField.clear();
+        passwordField.clear();
     }
 }
 
