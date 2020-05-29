@@ -1,27 +1,26 @@
 public class CommandMessage extends AbstractMessage {
 
     public enum Command {
-        FILE_REQUEST, FILE_DELETE, FILE_RENAME, FILE_GET_LIST, STOP
+        AUTH, AUTH_OK, AUTH_FALSE, FILE_REQUEST, FILE_DELETE, FILE_RENAME, FILE_GET_LIST
     }
 
     private Command cmd;
-    private String filename;
+    private String data;
 
     public CommandMessage(Command cmd) {
         this.cmd = cmd;
     }
 
-    public CommandMessage(Command cmd, String filename) {
+    public CommandMessage(Command cmd, String data) {
         this.cmd = cmd;
-        this.filename = filename;
+        this.data = data;
     }
 
     public Command getCommand() {
         return cmd;
     }
 
-    public String getFilename() {
-
-        return filename;
+    public String getData() {
+        return data;
     }
 }

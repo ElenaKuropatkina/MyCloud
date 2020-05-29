@@ -7,35 +7,36 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
         if (msg instanceof CommandMessage) {
-            CmdService cs = new CmdService((CommandMessage) msg);
-            System.out.println(((CommandMessage) msg).getFilename());
+
+            System.out.println(((CommandMessage) msg).getData());
             switch (((CommandMessage) msg).getCommand()) {
                 case FILE_REQUEST:
                     try {
-                        FileMessage fm = cs.processingFileRequest();
-                        ctx.writeAndFlush(fm);
+                        ctx.writeAndFlush(new CmdService().processingFileRequest((CommandMessage) msg));
                     } catch (IOException e) {
                         System.out.println("File not found");
                     }
                     break;
                 case FILE_DELETE:
-                    cs.processing();
+                    ctx.writeAndFlush(new CmdService().processing((CommandMessage) msg));
                     break;
                 case FILE_GET_LIST:
-                    ListMessage lm = (ListMessage) cs.getList();
                     System.out.println("FilesList");
-                    ctx.writeAndFlush(lm);
+                    ctx.writeAndFlush(new CmdService().getList());
                     break;
                 case FILE_RENAME:
-                    cs.renameFile();
+                    ctx.writeAndFlush(new CmdService().renameFile((CommandMessage) msg));
+                    break;
+                case AUTH:
+                    ctx.writeAndFlush(new CmdService().auth((CommandMessage) msg));
                     break;
             }
         }
 
         if (msg instanceof FileMessage) {
-            FileService fs = new FileService((FileMessage) msg);
-            fs.processing();
+            ctx.writeAndFlush(new FileService().processing((FileMessage) msg));
         }
     }
 

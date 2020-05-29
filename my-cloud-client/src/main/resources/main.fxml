@@ -6,22 +6,37 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
+<?import javafx.scene.control.PasswordField?>
+<?import java.net.URL?>
 <VBox fx:id="rootNode" alignment="CENTER" prefHeight="400.0" prefWidth="400.0"
-      style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);"
       xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.172-ea"
       fx:controller="MyClientController">
-    <HBox>
-        <TextField fx:id="tfFileName" focusTraversable="false" promptText="Укажите имя файла" HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btn1" onAction="#pressOnDownloadBtn" text="Скачать"/>
-        <Button fx:id="btn2" onAction="#pressOnUploadBtn" text="Загрузить"/>
-        <Button fx:id="btn3" onAction="#pressOnDeleteRemoteBtn" text="Удалить на сервере"/>
-        <Button fx:id="btn4" onAction="#pressOnDeleteLocalBtn" text="Удалить локально"/>
-        <Button fx:id="btn5" onAction="#pressOnGetListBtn" text="Список"/>
-        <Button fx:id="btn6" onAction="#pressOnRenameLocalBtn" text="Переименовать локально"/>
-        <Button fx:id="btn7" onAction="#pressOnRenameRemoteBtn" text="Переименовать на сервере"/>
+    <HBox VBox.vgrow="ALWAYS" fx:id="upperPanel">
+        <TextField fx:id="loginField" HBox.hgrow="ALWAYS" promptText="Логин"/>
+        <PasswordField fx:id="passwordField" promptText="Пароль"  onAction="#tryToAuth"/>
+        <Button fx:id="btn" text="Auth" onAction="#tryToAuth"/>
     </HBox>
-    <ListView fx:id="filesList" VBox.vgrow="ALWAYS"/>
-    <ListView fx:id="remoteFilesList" VBox.vgrow="ALWAYS"/>
+
+            <HBox VBox.vgrow="ALWAYS" fx:id="bottomPanel" managed="false" visible="false" alignment="CENTER">
+                <VBox>
+                <TextField fx:id="tfFileName" focusTraversable="false" promptText="Укажите имя файла" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btn1" onAction="#pressOnDownloadBtn" text="Скачать"/>
+                <Button fx:id="btn2" onAction="#pressOnUploadBtn" text="Загрузить"/>
+                <Button fx:id="btn3" onAction="#pressOnDeleteRemoteBtn" text="Удалить на сервере"/>
+                <Button fx:id="btn4" onAction="#pressOnDeleteLocalBtn" text="Удалить локально"/>
+                <Button fx:id="btn5" onAction="#pressOnGetListBtn" text="Список"/>
+                <Button fx:id="btn6" onAction="#pressOnRenameLocalBtn" text="Переименовать локально"/>
+                <Button fx:id="btn7" onAction="#pressOnRenameRemoteBtn" text="Переименовать на сервере"/>
+                </VBox>
+                <ListView fx:id="filesList" VBox.vgrow="ALWAYS"/>
+                <ListView fx:id="remoteFilesList" VBox.vgrow="ALWAYS"/>
+            </HBox>
+
+
+
 </VBox>
+
+
+
+
 
