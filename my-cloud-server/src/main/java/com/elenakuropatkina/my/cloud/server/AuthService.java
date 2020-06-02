@@ -19,10 +19,10 @@ public class AuthService {
     }
 
     public static boolean checkLoginAndPass(String login, String pass) {
-        try{
+        try {
             ResultSet rs = stmt.executeQuery("SELECT passHash FROM users WHERE login = '" + login + "'");
             int userHash = pass.hashCode();
-            if(rs.next()) {
+            if (rs.next()) {
                 int dbHash = rs.getInt(1);
                 if (dbHash == userHash) {
                     return true;

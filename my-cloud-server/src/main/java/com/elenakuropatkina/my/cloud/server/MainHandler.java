@@ -7,10 +7,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
 
+
 public class MainHandler extends ChannelInboundHandlerAdapter {
 
-//    FileService fs = new FileService();
-//    CmdService cs = new CmdService();
     Service s = new Service();
 
     @Override
@@ -19,10 +18,13 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof CommandMessage) {
             System.out.println(((CommandMessage) msg).getData());
             switch (((CommandMessage) msg).getCommand()) {
+                case BIG_FILE_END:
+                    ctx.writeAndFlush(s.filesMerge(((CommandMessage) msg).getData()));
+                    break;
                 case FILE_REQUEST:
                     try {
-                        for (FileMessage fm: s.processingFileRequest((CommandMessage) msg)
-                             ) {
+                        for (FileMessage fm : s.processingFileRequest((CommandMessage) msg)
+                        ) {
                             ctx.writeAndFlush(fm);
                         }
                     } catch (IOException e) {

@@ -16,7 +16,6 @@ public class MyClient extends Application {
         Scene scene = new Scene(root, 400, 450);
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 
     public static void main(String[] args) {
